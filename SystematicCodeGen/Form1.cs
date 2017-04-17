@@ -22,6 +22,10 @@ namespace SystematicCodeGen
         public static string send4;
         public static string line;
         public static int col1;
+        public static bool isChecked = false;
+        public static bool isNamed = false;
+        public static bool isSelected = false;
+        public static string name;
         public Form1()
         {
             InitializeComponent();
@@ -45,7 +49,14 @@ namespace SystematicCodeGen
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedItem.ToString() == "เสื้อผ้า")
+            if (string.IsNullOrEmpty(comboBox1.SelectedText))
+            {
+                isSelected = false;
+            } else
+            {
+                isSelected = true;
+            }
+                if (comboBox1.SelectedItem.ToString() == "เสื้อผ้า")
             {
                 textBox2.Text = "1";
             }
@@ -91,16 +102,20 @@ namespace SystematicCodeGen
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
+            isChecked = false;
             if (radioButton1.Checked)
             {
                 textBox3.Text = "C";
+                isChecked = true;
             }
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
+            isChecked = false;
             if (radioButton2.Checked)
             {
+                isChecked = true;
                 textBox3.Text = "F";
             }
         }
@@ -132,8 +147,10 @@ namespace SystematicCodeGen
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
+            isChecked = false;
             if (radioButton3.Checked)
             {
+                isChecked = true;
                 textBox3.Text = "DN";
             }
         }
@@ -149,9 +166,21 @@ namespace SystematicCodeGen
 
         public void button1_Click(object sender, EventArgs e)
         {
+            if (name.Length <= 0)
+            {
+                isNamed = false;
+            } else if (name.Length > 1)
+            {
+                isNamed = true;
+            }
+            if (isChecked == false || isSelected == false || isNamed == false)
+            {
+                label4.Text = ("ไม่สามารถสร้างรหัสให้ได้");
+                MessageBox.Show("ไม่สามารถสร้างให้ได้เนื่องจาก \nระบบไม่พบการติ๊กประเภทอย่างถูกต้อง");
+            } else if (isChecked == true || isSelected == true || isNamed == true)
+            {
             dee = dee+1;
             textBox4.Text = dee.ToString();
-            string name;
             name = textBox5.Text;
             //MessageBox.Show(textBox2.Text + d3 + "-" + textBox3.Text + "-" + dee.ToString("D4"));
             label4.Text = (textBox2.Text + d3 + "-" + textBox3.Text + "-" + dee.ToString("D4"));
@@ -178,32 +207,47 @@ namespace SystematicCodeGen
                 MessageBox.Show("Error Na Ja !");
             }
 
-
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            string ncode = (textBox2.Text + d3 + "-" + textBox3.Text + "-" + dee.ToString("D4"));
-            string barCode = ncode;
-            Bitmap bitMap = new Bitmap(barCode.Length * 40, 80);
-
-            using (Graphics graphics = Graphics.FromImage(bitMap))
+            if (Name.Length <= 0)
             {
-                Font oFont = new Font("IDAHC39M Code 39 Barcode", 16);
-                PointF point = new PointF(2f, 2f);
-                SolidBrush blackBrush = new SolidBrush(Color.Black);
-                SolidBrush whiteBrush = new SolidBrush(Color.White);
-                graphics.FillRectangle(whiteBrush, 0, 0, bitMap.Width, bitMap.Height);
-                graphics.DrawString("*" + barCode + "*", oFont, blackBrush, point);
+                isNamed = false;
             }
-            using (MemoryStream ms = new MemoryStream())
+            else if (Name.Length >= 1)
             {
-                bitMap.Save(ms, ImageFormat.Png);
-                pictureBox2.Image = bitMap;
-                pictureBox2.Height = bitMap.Height;
-                pictureBox2.Width = bitMap.Width;
+                isNamed = true;
             }
+            if (isChecked == false)
+                {
+                label4.Text = ("ไม่สามารถสร้างรหัสให้ได้");
+                MessageBox.Show("ไม่สามารถสร้างให้ได้เนื่องจาก \nระบบไม่พบการติ๊กประเภทอย่างถูกต้อง");
+            }
+            else if (isChecked == true)
+            {
+                string ncode = (textBox2.Text + d3 + "-" + textBox3.Text + "-" + dee.ToString("D4"));
+                string barCode = ncode;
+                Bitmap bitMap = new Bitmap(barCode.Length * 40, 80);
 
+                using (Graphics graphics = Graphics.FromImage(bitMap))
+                {
+                    Font oFont = new Font("IDAHC39M Code 39 Barcode", 16);
+                    PointF point = new PointF(1f, 1f);
+                    SolidBrush blackBrush = new SolidBrush(Color.Black);
+                    SolidBrush whiteBrush = new SolidBrush(Color.White);
+                    graphics.FillRectangle(whiteBrush, 0, 0, bitMap.Width, bitMap.Height);
+                    graphics.DrawString("*" + barCode + "*", oFont, blackBrush, point);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bitMap.Save(ms, ImageFormat.Png);
+                    pictureBox2.Image = bitMap;
+                    pictureBox2.Height = bitMap.Height;
+                    pictureBox2.Width = bitMap.Width;
+                }
+            }
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -232,8 +276,10 @@ namespace SystematicCodeGen
 
         private void button2_Click(object sender, EventArgs e)
         {
-            check = "END";
-            MessageBox.Show("จบการทำงานแล้วนะครับ ขอสรุปยอดเลยแล้วกันนะ วันนี้บันทึกไปได้ "  + dee.ToString() + " รายการ" );
+            {
+                check = "END";
+                MessageBox.Show("จบการทำงานแล้วนะครับ ขอสรุปยอดเลยแล้วกันนะ วันนี้บันทึกไปได้ " + dee.ToString() + " รายการ");
+            }
         }
 
         public static void SetFileReadAccess(string FileName, bool SetReadOnly)
@@ -243,6 +289,7 @@ namespace SystematicCodeGen
 
         public void button3_Click(object sender, EventArgs e)
         {
+
             try
             {
                     StreamReader wr = new StreamReader("inventory_full" + d3 + ".dsm", true);
